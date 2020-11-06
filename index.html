@@ -18,6 +18,11 @@
         height: 30px;
     }
 
+    .error {
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+    }
+
     .valid {
         border: 1px solid green;
     }
@@ -26,14 +31,20 @@
         border: 1px solid red;
     }
 </style>
-<form class="formValidation" style="display: flex; flex-direction: column;" action="">
-    <label>
-        <input data-validation="emailValid" type="text" placeholder="sdsdg">
-    </label>
-    <label>
-        <input data-validation="number" type="text">
-    </label>
 
+<form data-validation="formValidation" style="display: flex; flex-direction: column;" action="">
+    <label>
+        <input data-validation="emailValid" data-field="field" type="text" placeholder="Email">
+    </label>
+    <label>
+        <input data-validation="password" data-field="field" type="password" placeholder="password">
+    </label>
+    <label>
+        <input data-validation="passwordConfirmation" data-field="field" type="password" placeholder="repeat password">
+    </label>
+    <label>
+        <input data-validation="number" data-field="field" type="text">
+    </label>
     <button data-validation="btnSubmit" type="submit">Отправить</button>
 </form>
 <script src="js/validationModule.js"></script>
