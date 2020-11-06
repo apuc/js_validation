@@ -1,10 +1,10 @@
-let form = document.querySelector('form[data-validation="formValidation"]')
-let submitBtn = form.querySelector('[data-validation="btnSubmit"]')
-let email = form.querySelector('[data-validation="emailValid"]')
-let password = form.querySelector('[data-validation="password"]')
-let passwordConfirm = form.querySelector('[data-validation="passwordConfirmation"]')
-let number = form.querySelector('[data-validation="number"]')
-let fields = form.querySelectorAll('[data-field="field"]')
+let form = document.querySelector('form[data-validation="formValidation"]');
+let submitBtn = form.querySelector('[data-validation="btnSubmit"]');
+let email = form.querySelector('[data-validation="emailValid"]');
+let password = form.querySelector('[data-validation="password"]');
+let passwordConfirm = form.querySelector('[data-validation="passwordConfirmation"]');
+let number = form.querySelector('[data-validation="number"]');
+let fields = form.querySelectorAll('[data-field="field"]');
 
 let generateError = function (text){
     let error = document.createElement('div');
