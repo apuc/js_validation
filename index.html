@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<style>
+    label {
+        margin-bottom: 5px;
+    }
+
+    button {
+        width: 150px;
+        height: 30px;
+    }
+
+    .valid {
+        border: 1px solid green;
+    }
+
+    .invalid {
+        border: 1px solid red;
+    }
+</style>
+<form class="formValidation" style="display: flex; flex-direction: column;" action="">
+    <label>
+        <input data-validation="emailValid" type="text" placeholder="sdsdg">
+    </label>
+    <label>
+        <input data-validation="number" type="text">
+    </label>
+
+    <button data-validation="btnSubmit" type="submit">Отправить</button>
+</form>
+<script src="js/validationModule.js"></script>
+
+</body>
+</html>
