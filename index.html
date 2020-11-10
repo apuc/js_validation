@@ -22,6 +22,7 @@
         font-family: Arial, sans-serif;
         font-size: 12px;
     }
+
     div {
         display: flex;
         flex-direction: column;
@@ -30,33 +31,32 @@
 </style>
 <form data-validation="formValidation" style="display: flex; flex-direction: column;" action="">
     <label>Email <br>
-        <input data-validation="emailValid" data-field="field" type="text" placeholder="Email">
+        <input data-validation="emailValid require " data-field="field" type="text" placeholder="Email">
     </label>
     <label>Password<br>
-        <input data-validation="email|re" data-field="field" type="password" placeholder="password">
+        <input data-validation="password require" data-field="field" type="password" placeholder="password">
     </label>
     <label>Repeat password<br>
-        <input data-validation="passwordConfirmation" data-field="field" type="password" placeholder="repeat password">
+        <input data-validation="passwordConfirmation require" data-field="field" type="password" placeholder="repeat password">
     </label>
-   <label>Choose country<br>
-        <select name="Country" data-field="field">
+    <label>Choose country<br>
+        <select name="Country" data-validation="country" data-field="field">
             <option value="">Не выбрано</option>
             <option value="Ukraine">Ukraine</option>
             <option value="Russia">Russia</option>
             <option value="Belarus">Belarus</option>
         </select>
     </label>
- <label>You number<br>
-        <input data-validation="number" id="phone" name="phone" data-field="field" type="text">
+    <label>You number<br>
+        <input data-validation="number" name="phone" data-field="field" type="text">
     </label>
 
     <label> I agree <br>
-        <input data-validation="agreement" type="checkbox" checked >
-       <a href="">Пользовательское соглашение</a>
+        <input data-validation="agreement require" data-field="field" type="checkbox">
+        <a href="">Пользовательское соглашение</a>
     </label>
     <button data-validation="btnSubmit" type="submit">Отправить</button>
 </form>
 <script src="js/validationModule.js"></script>
-
 </body>
 </html>

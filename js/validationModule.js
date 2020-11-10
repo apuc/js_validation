@@ -6,67 +6,132 @@ let passwordConfirm = form.querySelector('[data-validation="passwordConfirmation
 let number = form.querySelector('[data-validation="number"]');
 let fields = form.querySelectorAll('[data-field="field"]');
 let agree = form.querySelector('[data-validation="agreement"]');
-/**генерирует блок с ошибкой*/
-let generateError = function (text, field) {
-    let error = document.createElement('div');
-    error.className = 'error';
-    error.style.color = 'red';
-    error.innerHTML = text;
-    field.parentElement.insertBefore(error, field);
+let validationElement = form.querySelectorAll('[data-validation]');
+console.log(validationElement);
+
+
+let selectVal = function(field) {
+    console.log("validateFunctionEmail");
+let selectedValue = field.options[field.selectedIndex].value; // селект.опции.[селект.айдиОпции].значение
+if (!selectedValue) {               // если выбранное значение селекта не тру, т.е. не имеет значения и возвращает фолс
+    generateError('Вы ничего не выбрали', field);    //выполняем функцию генерации ошибки с текстом,
+     }
+
 };
+
+let searchMethodValid = function (field){
+
+    let validationEl = field.getAttribute('data-validation');
+    let arValidEl = validationEl.split(" ");
+    arValidEl[0] === "emailValid" ? selectVal(field): false;
+    arValidEl[0] === "password" ? console.log("validateFunctionEmail"): false;
+    arValidEl[0] === "passwordConfirmation" ? console.log("validateFunctionEmail"): false;
+    arValidEl[0] === "country" ? console.log("validateFunctionEmail"): false;
+    arValidEl[0] === "number" ? console.log("validateFunctionEmail"): false;
+    arValidEl[0] === "agreement" ? console.log("validateFunctionEmail"): false;
+
+};
+
+let validation = function() {
+    for (let i = 0; i < fields.length; i++){
+
+        const field = fields[i];                //один элемент
+        searchMethodValid(field);
+
+
+    }
+
+};
+
+validation();
+
+
+
+
+
+
+//Второй вариант ^
+//               |
+//               |
+/**--------------------------------------------------------------------------*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**удаляет ошибки перед выполнением следующих проверок*/
 let removeValidation = function () {
     let errors = form.querySelectorAll('.error');
     for (let i = 0; i < errors.length; i++) {
-        errors[i].remove()
+        errors[i].remove();
+        console.log(errors[i]);
     }
+};
+/**генерирует блок с ошибкой*/
+let generateError = function (text, field) {                // принимает текст и элемент перед которым нужно вставить блок
+    let error = document.createElement('div');     // создает элемент див
+    error.className = 'error';                              //добавляет диву класс
+    error.style.color = 'red';                              //устанавливает цвет текста
+    error.innerHTML = text;                                 //передает текст в иннерHtml
+    field.parentElement.insertBefore(error, field);         //принимает значения перед родителем определенного элемента
+
 };
 
 /** Проверяет заполнение инпутов*/
 let checkFieldsPresence = function () {
-    for (let i = 0; i < fields.length; i++) {
-        const field = fields[i];
+    for (let i = 0; i < fields.length; i++) { //перебор всего в форме на наличие данных
 
-        if (field.tagName === 'SELECT') {
+        const field = fields[i];                //один элемент
 
-            let selectedValue = field.options[field.selectedIndex].value;
+        if (field.tagName === 'SELECT') {       //Если элемент селект
 
-            if (!selectedValue) {
-                generateError('Поле заполненно неверно' , field);
-            }
+            let selectedValue = field.options[field.selectedIndex].value; // селект.опции.[селект.айдиОпции].значение
+
+            if (!selectedValue) {               // если выбранное значение селекта не тру, т.е. не имеет значения и возвращает фолс
+                generateError('Вы ничего не выбрали', field);    //выполняем функцию генерации ошибки с текстом,
+            }                                                             //   к определенному элементу
         }
 
-        if (field.tagName === 'INPUT') {
+        if (field.tagName === 'INPUT') {        //если элемент инпут
+
             if (!field.value) {
-               generateError('Поле заполненно неверно', field);
+                generateError('Поле заполненно неверно', field);
+            }
+
+            if (password.value && passwordConfirm.value) {//если значение пароля и значение подтвержденного > 0
+                console.log('asfaf');
+                if (password.value !== passwordConfirm.value) {         //если значения паролей не равны
+                    generateError('Пароли не совпадают', field);   //  вызов функции с текстом
+                }
+            }
+        }
+
+        if (field === agree) {                       //Если элемент это чекбокс
+            if (!field.checked) {                  //Если чекбокс не checked выводим ошибку
+                generateError('Вы не приняли пользовательское соглашение', field);
             }
         }
     }
 };
-/**Порверка статуса Чекбокса*/
-let agreement = function () {
-    if (agree.checked) {
-        //  console.log('CHECKED')
-    } else {
-        //  console.log('NOTCHECKED')
 
-    }
-};
-/**Проверяет совпадение паролей*/
-let checkPasswordMatch = function () {
-    if (password.value !== passwordConfirm.value) {
-        let error = generateError('Пароли не совпадают');
-        password.parentElement.insertBefore(error, password);
-    }
-};
 /**Слушатель на кнопку сабмит, для вызова функций проверки*/
 form.addEventListener('submit', function (event) {
     event.preventDefault();
     removeValidation();
+    searchMethodValid();
     checkFieldsPresence();
-    checkPasswordMatch();
-    agreement();
+
 });
 
 /*
