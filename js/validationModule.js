@@ -17,6 +17,10 @@ let selectVal = function (field) {
         generateError('Вы ничего не выбрали', field);       //выполняем функцию генерации ошибки с текстом,
     }
 };
+let agreement = function(field) {
+    !field.checked ?  generateError('Вы не приняли пользовательское соглашение', field) : console.log("NET");
+
+};
 
 /**удаляет ошибки перед выполнением следующих проверок*/
 let removeValidation = function () {
@@ -46,7 +50,7 @@ let generateError = function (text, field) {                // принимае�
 };
 
 let comparePassword = function (field){
-    if (password.value && passwordConfirm.value) {//если значение пароля и значение подтвержденного > 0
+    if (password.value && passwordConfirm.value) {//если значение пароля и значение подтвержденного не null
         if (password.value !== passwordConfirm.value) {         //если значения паролей не равны
             generateError('Пароли не совпадают', field);   //  вызов функции с текстом
         }
@@ -75,10 +79,11 @@ let searchMethodValid = function (field) {
             selectVal(field);
             break;
         case("number") :
-            let number = inputValue ? generateError('Поле не заполнено', field) :console.log('valid');
+            let number = inputValue ? generateError('Поле не заполнено', field) :numberValid(field);
+            !number ? generateError('Номер введен неверно', field): console.log('valid');
             break;
         case("agreement") :
-            console.log("validateFunctionAgreement");
+            agreement(field);
             break;
     }
 
@@ -97,8 +102,6 @@ let validation = function () {
 form.addEventListener('submit', function (event) {
     event.preventDefault();
     removeValidation();
-    /* searchMethodValid();
-     checkFieldsPresence();*/
     validation();
 
 });
