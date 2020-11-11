@@ -31,13 +31,13 @@
 </style>
 <form data-validation="formValidation" style="display: flex; flex-direction: column;" action="">
     <label>Email <br>
-        <input data-validation="emailValid require " data-field="field" type="text" placeholder="Email">
+        <input data-validation="emailValid require " name="emailValid" data-field="field" type="text" placeholder="Email">
     </label>
     <label>Password<br>
-        <input data-validation="password require" data-field="field" type="password" placeholder="password">
+        <input data-validation="password require" name="password" data-field="field" type="password" placeholder="password">
     </label>
     <label>Repeat password<br>
-        <input data-validation="passwordConfirmation require" data-field="field" type="password" placeholder="repeat password">
+        <input data-validation="passwordConfirmation require" name="passwordConfirmation" data-field="field" type="password" placeholder="repeat password">
     </label>
     <label>Choose country<br>
         <select name="Country" data-validation="country" data-field="field">
@@ -48,11 +48,11 @@
         </select>
     </label>
     <label>You number<br>
-        <input data-validation="number" name="phone" data-field="field" type="text" placeholder="+11(222)333-44-55">
+        <input data-validation="number" name="number" data-field="field" type="text" placeholder="+11(222)333-44-55">
     </label>
 
     <label> I agree <br>
-        <input data-validation="agreement require" data-field="field" type="checkbox">
+        <input data-validation="agreement require" data-field="field" name="agreement" type="checkbox">
         <a href="">Пользовательское соглашение</a>
     </label>
     <button data-validation="btnSubmit" type="submit">Отправить</button>
