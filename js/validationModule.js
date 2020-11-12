@@ -1,6 +1,6 @@
 class ValidationModule {
-    form = document.querySelectorAll('form[data-validation="formValidation"]');
-
+    form;
+    fields;
 
     /*form = document.querySelector('form[data-validation="formValidation"]');
       password = this.form.querySelector('[data-validation="password"]');
@@ -8,24 +8,10 @@ class ValidationModule {
       number = #form.querySelector('[data-validation="number"]');
       fields = #form.querySelectorAll('[data-field="field"]');
       agree = #form.querySelector('[data-validation="agreement"]');*/
-
-
-
-    findElement(element) {
-        console.log("123241124124");
-        this.form.querySelector(`[data-validation="element"]`);
-
+    constructor() {
+        this.form = document.querySelector('form[data-validation="formValidation"]');
+        this.fields = this.form.querySelectorAll(`[data-validation]`);
     }
-
-/*    w_1_test(element){
-     /!*   console.log('W1',"HJHHJ");*!/
-        return this.w_2_test(element);
-    }
-
-    w_2_test(g){
-        console.log('W2',`${g}`);
-        return '0'
-    }*/
 
     /**удаляет ошибки перед выполнением следующих проверок*/
     removeValidation = function (form) {
@@ -57,102 +43,101 @@ class ValidationModule {
         }
     };
 
-    validation = function (fields) {
+    validation = function () {
 
-        for (let i = 0; i < fields.length; i++) {
 
-            const field = fields[i];                //один элемент
-            searchMethodValid(field);
+        for (let i = 0; i < this.fields.length; i++) {
+            this.searchMethodValid(this.fields[i]);
         }
     };
 
     comparePassword = function (field) {
         if (password.value && passwordConfirm.value) {//если значение пароля и значение подтвержденного не null
             if (password.value !== passwordConfirm.value) {         //если значения паролей не равны
-                generateError('Пароли не совпадают', field);   //  вызов функции с текстом
+                this.generateError('Пароли не совпадают', field);   //  вызов функции с текстом
             }
         }
     };
 
     /**генерирует блок с ошибкой*/
-        generateError = function (text, field) {                // принимает текст и элемент перед которым нужно вставить блок
+    generateError = function (text, oneElement) {                // принимает текст и элемент перед которым нужно вставить блок
         let error = document.createElement('div');     // создает элемент див
         error.className = 'error';                              //добавляет диву класс
         error.style.color = 'red';                              //устанавливает цвет текста
         error.innerHTML = text;                                 //передает текст в иннерHtml
-        field.parentElement.insertBefore(error, field);         //принимает значения перед родителем определенного элемента
+        oneElement.parentElement.insertBefore(error, oneElement);         //принимает значения перед родителем определенного элемента
     };
 
-    searchMethodValid = function (field) {
+    searchMethodValid = function (oneElement) {
 
-        let validationEl = field.getAttribute('data-validation');
+        let validationEl = oneElement.getAttribute('data-validation');
         let arValidEl = validationEl.split(" ");
         /*console.log(field);*/
-        let inputValue = !field.value;
+        let inputValue = !oneElement.value;
 
-        /*switch (arValidEl[0]) {
+        switch (arValidEl[0]) {
             case("emailValid") :
-                let email = inputValue ? this.generateError('Поле не заполнено', field) : emailValid(field);
-                !email ? generateError('Неверный Email', field) : console.log("email valid");
+                let email = inputValue ? this.generateError('Поле не заполнено', oneElement) : this.emailValid(oneElement);
+                !email ? this.generateError('Неверный Email', oneElement) : console.log("email valid");
                 break;
             case("password") :
-                let passwordValid = inputValue ? generateError('Поле не заполнено', field) : comparePassword(field);
+                let passwordValid = inputValue ? this.generateError('Поле не заполнено', oneElement) : this.comparePassword(oneElement);
                 !passwordValid ? console.log('valid') : console.log('valid');
-                break;
+                break;/*
             case("passwordConfirmation") :
-                inputValue ? generateError('Поле не заполнено', field) : console.log('valid');
+                inputValue ? generateError('Поле не заполнено', oneElement) : console.log('valid');
                 break;
             case("country") :
                 selectVal(field);
                 break;
             case("number") :
-                let number = inputValue ? generateError('Поле не заполнено', field) : numberValid(field);
-                !number ? generateError('Номер введен неверно', field) : console.log('valid');
+                let number = inputValue ? generateError('Поле не заполнено', oneElement) : numberValid(oneElement);
+                !number ? generateError('Номер введен неверно', oneElement) : console.log('valid');
                 break;
             case("agreement") :
-                agreement(field);
-                break;
-        }*/
+                agreement(oneElement);
+                break;*/
+        }
 
     };
 }
 
-let fF = new ValidationModule();
-/*console.log(fF.findElement("number"));*/
 
 
-let  func  = function(){
+/*
+let func = function () {
     let form = document.querySelector('form[data-validation="formValidation"]');
     let elAll = form.querySelectorAll('[data-validation]');
     for (let i = 0; i < elAll.length; i++) {
         const field = elAll[i];                //один элемент
-            let g = field.getAttribute('data-validation');
-            let data = g.split(" ");
+        let g = field.getAttribute('data-validation');
+        let data = g.split(" ");
 
-                switch (data[0]) {
-                    case("number"):
-                        console.log(data[0]);
-                        console.log(field);
-                        break;
-                    case("password"):
-                        console.log(data[0]);
-                        console.log(field);
-                        break;
-                }
+        switch (data[0]) {
+            case("number"):
+                console.log(data[0]);
+                console.log(field);
+                break;
+            case("password"):
+                console.log(data[0]);
+                console.log(field);
+                break;
+        }
 
 
     }
 
-};
+};*/
 
 
-let fdf = document.querySelector(`[data-validation="passwordConfirmation"]`);
-func();
+let validator = new ValidationModule();
+validator.validation();
+
+
+
+
 /*let submitBtn = form.querySelector('[data-validation="btnSubmit"]');
 let email = form.querySelector('[data-validation="emailValid"]');*/
-
-//let validationElement = form.querySelectorAll('[data-validation]');
-//console.log(validationElement);
 
 
 /**Слушатель на кнопку сабмит, для вызова функций проверки*/
@@ -166,13 +151,9 @@ let email = form.querySelector('[data-validation="emailValid"]');*/
 /**--------------------------------------------------------------------------*/
 
 
-
-
 /**Слушатель на кнопку сабмит, для вызова функций проверки*/
-/*form.addEventListener('submit', function (event) {
+/*fdf.form.addEventListener('button', function (event) {
     event.preventDefault();
-    removeValidation();
-    searchMethodValid();
-    checkFieldsPresence();
-
+    fdf.arrElement();
+    fdf.validation();
 });*/
