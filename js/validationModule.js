@@ -1,6 +1,6 @@
 class ValidationModule {
-    #form;
-    #elVal;
+    form = document.querySelectorAll('form[data-validation="formValidation"]');
+
 
     /*form = document.querySelector('form[data-validation="formValidation"]');
       password = this.form.querySelector('[data-validation="password"]');
@@ -9,28 +9,23 @@ class ValidationModule {
       fields = #form.querySelectorAll('[data-field="field"]');
       agree = #form.querySelector('[data-validation="agreement"]');*/
 
-    constructor(element) {
-        this.#form = document.querySelector('form[data-validation="formValidation"]');
 
-        this.#elVal = this.#form.querySelector(`[data-validation="${element}"]`);
-    };
 
-    findForm() {
-        return this.#form;
+    findElement(element) {
+        console.log("123241124124");
+        this.form.querySelector(`[data-validation="element"]`);
+
     }
 
-    findElement() {
-        return this.#elVal;
-    };
-
-    w_1_test(element){
-        let g = this.w_2_test(element);
-        return element
+/*    w_1_test(element){
+     /!*   console.log('W1',"HJHHJ");*!/
+        return this.w_2_test(element);
     }
 
     w_2_test(g){
-        console.log(`${g}`);
-    }
+        console.log('W2',`${g}`);
+        return '0'
+    }*/
 
     /**удаляет ошибки перед выполнением следующих проверок*/
     removeValidation = function (form) {
@@ -67,7 +62,7 @@ class ValidationModule {
         for (let i = 0; i < fields.length; i++) {
 
             const field = fields[i];                //один элемент
-            this.searchMethodValid(field);
+            searchMethodValid(field);
         }
     };
 
@@ -94,7 +89,8 @@ class ValidationModule {
         let arValidEl = validationEl.split(" ");
         /*console.log(field);*/
         let inputValue = !field.value;
-        switch (arValidEl[0]) {
+
+        /*switch (arValidEl[0]) {
             case("emailValid") :
                 let email = inputValue ? this.generateError('Поле не заполнено', field) : emailValid(field);
                 !email ? generateError('Неверный Email', field) : console.log("email valid");
@@ -116,16 +112,42 @@ class ValidationModule {
             case("agreement") :
                 agreement(field);
                 break;
-        }
+        }*/
 
     };
-
-
 }
 
-let fF = new ValidationModule('number');
-/*console.log(fF.findForm());*/
-console.log(fF.w_1_test('fsaafsa'));
+let fF = new ValidationModule();
+/*console.log(fF.findElement("number"));*/
+
+
+let  func  = function(){
+    let form = document.querySelector('form[data-validation="formValidation"]');
+    let elAll = form.querySelectorAll('[data-validation]');
+    for (let i = 0; i < elAll.length; i++) {
+        const field = elAll[i];                //один элемент
+            let g = field.getAttribute('data-validation');
+            let data = g.split(" ");
+
+                switch (data[0]) {
+                    case("number"):
+                        console.log(data[0]);
+                        console.log(field);
+                        break;
+                    case("password"):
+                        console.log(data[0]);
+                        console.log(field);
+                        break;
+                }
+
+
+    }
+
+};
+
+
+let fdf = document.querySelector(`[data-validation="passwordConfirmation"]`);
+func();
 /*let submitBtn = form.querySelector('[data-validation="btnSubmit"]');
 let email = form.querySelector('[data-validation="emailValid"]');*/
 
@@ -134,12 +156,12 @@ let email = form.querySelector('[data-validation="emailValid"]');*/
 
 
 /**Слушатель на кнопку сабмит, для вызова функций проверки*/
-form.addEventListener('submit', function (event) {
+/*form.addEventListener('submit', function (event) {
     event.preventDefault();
     removeValidation();
     validation();
 
-});
+});*/
 
 /**--------------------------------------------------------------------------*/
 
