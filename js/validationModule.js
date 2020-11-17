@@ -1,16 +1,30 @@
 class ValidationModule {
     form;
     fields;
-    arr;
+    patternArr;
+    errorText;
 
     constructor() {
         this.form = document.querySelector('form[data-validation="formValidation"]');
         this.fields = this.form.querySelectorAll(`[data-validation]`);
-        this.arr = new Map([
-            ['number', /^\+\d{2}\(\d{3}\)\d{3}-\d{2}-\d{2}$/],
-            ['emailValid', /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/],
-            ['password', /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{6,64}$/]          /**(?=.*[ -/:-@\[-`{-~]) паттерн для знаков */
-        ]);
+        /* this.patternArr = new Map([
+             ['number', /^\+\d{2}\(\d{3}\)\d{3}-\d{2}-\d{2}$/],
+             ['emailValid', /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/],
+             ['password', /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{6,64}$/]          /!**(?=.*[ -/:-@\[-`{-~]) паттерн для знаков *!/
+         ]);*/
+        this.patternArr = {
+            'number': /^\+\d{2}\(\d{3}\)\d{3}-\d{2}-\d{2}$/,
+            'emailValid': /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/,
+            /**(?=.*[ -/:-@\[-`{-~]) паттерн для знаков */
+            'password': /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{6,64}$/,
+        };
+        this.errorText = {
+            'valueNone': "Поле не заполнено",
+            'valuePatternError': "Поле заполнено неверно",
+            'selectOption': "Вы ничего не выбрали",
+            'checkboxConfirm': "Вы не приняли лицензионное соглашение",
+        }
+
     }
 
     validation = function () {
@@ -22,41 +36,65 @@ class ValidationModule {
 
     /** подбирает валидацию для элемента и вызывает соответствующие функции */
     searchMethodValid = function (oneElement) {
-        let validationEl = oneElement.getAttribute('data-validation');
-        let arValidEl = validationEl.split(" ")[0];
-        let inputValue = !oneElement.value;//
-        switch (arValidEl) {
 
-            /** Если значение пустое, выводит error , если заполнено, вызывает функцию паттерна и принимает тру или фолс */
-            case("emailValid") :
-                let email = inputValue ? this.generateError('Поле не заполнено', oneElement) : this.patternValid(oneElement, arValidEl);
-                !email ? this.generateError('Неверный Email', oneElement) : console.log();
-                break;
-
-            /** Проверка на пустую строку, пвроерка по паттерну, проверка на совпадние паролей */
-            case("password") :
-                let passwordValid = inputValue ? this.generateError('Поле не заполнено', oneElement) : this.patternValid(oneElement, arValidEl);
-                !passwordValid ? this.generateError('Не соответствует форматированию', oneElement) : this.comparePassword(oneElement);
-                break;
-
-            case("passwordConfirmation") :
-                inputValue ? this.generateError('Поле не заполнено', oneElement) : console.log();
-                break;
-
-            case("country") :
-                this.selectVal(oneElement);
-                break;
-
-            /**  Проверка номера, в плане выбор стандарта по региону this.number = паттерн   */
-            case("number") :
-                let number = inputValue ? this.generateError('Поле не заполнено', oneElement) : this.patternValid(oneElement, arValidEl);
-                !number ? this.generateError('Номер введен неверно', oneElement) : console.log();
-                break;
-
-            case("agreement") :
-                this.agreement(oneElement);
-                break;
+        let validationEl = oneElement.getAttribute('data-validation'); // Все данные дата атрибута
+        let arValidEl = validationEl.split(" ")[0];   //Выбор первого дата атрибута из массива
+        let valueElement = oneElement.value;    // Введенные данные элемента
+        if (oneElement.options[0] || !oneElement.options[0] ) {
+            console.log("Это Селект не активирован");
+            let selectedValue = oneElement.options[oneElement.selectedIndex].value;       //селект.опции.[селект.айдиОпции].значение
+            if (!selectedValue) {                                               //если выбранное значение селекта не тру, т.е. не имеет значения и возвращает фолс
+                this.generateError(`this.errorText[valueNone]` ,oneElement);         //выполняем функцию генерации ошибки с текстом,
+            }
         }
+
+
+        if (oneElement.checked || !oneElement.checked) {
+            console.log("Это Чекбокс")
+        }
+
+        if (valueElement) {
+            if (!this.patternArr[arValidEl].test(valueElement)) {
+                this.generateError(`this.errorText[valuePatternError]`, oneElement)
+            }
+        } else {
+            console.log(this.patternArr[arValidEl]);
+            this.generateError(`this.errorText[valueNone]`, oneElement)
+        }
+
+
+        /* switch (arValidEl) {
+
+             /!** Если значение пустое, выводит error , если заполнено, вызывает функцию паттерна и принимает тру или фолс *!/
+             case("emailValid") :
+                 let email = inputValue ? this.generateError('Поле не заполнено', oneElement) : this.patternValid(oneElement, arValidEl);
+                 !email ? this.generateError('Неверный Email', oneElement) : console.log();
+                 break;
+
+             /!** Проверка на пустую строку, пвроерка по паттерну, проверка на совпадние паролей *!/
+             case("password") :
+                 let passwordValid = inputValue ? this.generateError('Поле не заполнено', oneElement) : this.patternValid(oneElement, arValidEl);
+                 !passwordValid ? this.generateError('Не соответствует форматированию', oneElement) : this.comparePassword(oneElement);
+                 break;
+
+             case("passwordConfirmation") :
+                 inputValue ? this.generateError('Поле не заполнено', oneElement) : console.log();
+                 break;
+
+             case("country") :
+                 this.selectVal(oneElement);
+                 break;
+
+             /!**  Проверка номера, в плане выбор стандарта по региону this.number = паттерн   *!/
+             case("number") :
+                 let number = inputValue ? this.generateError('Поле не заполнено', oneElement) : this.patternValid(oneElement, arValidEl);
+                 !number ? this.generateError('Номер введен неверно', oneElement) : console.log();
+                 break;
+
+             case("agreement") :
+                 this.agreement(oneElement);
+                 break;
+         }*/
     };
 
     /**генерирует блок с ошибкой*/
@@ -77,7 +115,7 @@ class ValidationModule {
     };
 
     patternValid = function (oneElement, dataA) {
-        let pattern = this.arr.get(`${dataA}`);     /** передается дата первый дата атрибут */
+        let pattern = this.patternArr.get(`${dataA}`);     /** передается дата первый дата атрибут */
         return pattern.test(oneElement.value);      /** Возвращает фолс если значение не прошло валидацию паттерном */
     };
 
@@ -112,5 +150,6 @@ validator.form.addEventListener('submit', function (event) {
     validator.validation();
 });
 
-
 /**--------------------------------------------------------------------------*/
+
+
