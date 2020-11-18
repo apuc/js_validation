@@ -7,24 +7,23 @@ class ValidationModule {
     constructor() {
         this.form = document.querySelector('form[data-validation="formValidation"]');
         this.fields = this.form.querySelectorAll(`[data-validation]`);
-        /* this.patternArr = new Map([
-             ['number', /^\+\d{2}\(\d{3}\)\d{3}-\d{2}-\d{2}$/],
-             ['emailValid', /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/],
-             ['password', /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{6,64}$/]          /!**(?=.*[ -/:-@\[-`{-~]) паттерн для знаков *!/
-         ]);*/
         this.patternArr = {
             'number': /^\+\d{2}\(\d{3}\)\d{3}-\d{2}-\d{2}$/,
-            'emailValid': /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/,
+            'email': /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/,
             /**(?=.*[ -/:-@\[-`{-~]) паттерн для знаков */
             'password': /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{6,64}$/,
+
         };
         this.errorText = {
             'valueNone': "Поле не заполнено",
             'valuePatternError': "Поле заполнено неверно",
-            'selectOption': "Вы ничего не выбрали",
+            'selectValid': "Вы ничего не выбрали",
             'checkboxConfirm': "Вы не приняли лицензионное соглашение",
-        }
+            'passwordConfirm': "Пароли не совпадают",
+            'agreement': "Вы не приняли пользовательсоке соглашение",
+            'email': "Не корректный Email адрес",
 
+        }
     }
 
     validation = function () {
@@ -34,32 +33,97 @@ class ValidationModule {
         }
     };
 
-    /** подбирает валидацию для элемента и вызывает соответствующие функции */
-    searchMethodValid = function (oneElement) {
+    /** проверка выбора селекта */
+    countryValid = function (formElement) {
+        let selectedValue = formElement.options[formElement.selectedIndex].value;       //селект.опции.[селект.айдиОпции].значение
+        if (!selectedValue) {                                               //если выбранное значение селекта не тру, т.е. не имеет значения и возвращает фолс
+            this.generateError(this.errorText['selectValid'], formElement);         //выполняем функцию генерации ошибки с текстом,
+        }
+    };
 
-        let validationEl = oneElement.getAttribute('data-validation'); // Все данные дата атрибута
-        let arValidEl = validationEl.split(" ")[0];   //Выбор первого дата атрибута из массива
-        let valueElement = oneElement.value;    // Введенные данные элемента
-        if (oneElement.options[0] || !oneElement.options[0] ) {
-            console.log("Это Селект не активирован");
-            let selectedValue = oneElement.options[oneElement.selectedIndex].value;       //селект.опции.[селект.айдиОпции].значение
-            if (!selectedValue) {                                               //если выбранное значение селекта не тру, т.е. не имеет значения и возвращает фолс
-                this.generateError(`this.errorText[valueNone]` ,oneElement);         //выполняем функцию генерации ошибки с текстом,
-            }
+    compareValid = function (formElement, compareWith) {
+        let compareTarget = document.getElementById(compareWith);
+        console.log(formElement.value);
+        console.log(compareTarget.value);
+        if (compareTarget.value != formElement.value) {
+            console.log('asdasd');
+            this.generateError(this.errorText['passwordConfirm'], formElement);
+        }
+    };
+
+    passwordValid = function (formElement) {
+        if (this.patternValid(formElement.value, "password")) {
+            let confirmPass = this.form.querySelector('[data-validation="passwordConfirmation require"]');
+
+        } else {
+            this.generateError(this.errorText['valuePatternError'], formElement)
         }
 
+    };
 
-        if (oneElement.checked || !oneElement.checked) {
-            console.log("Это Чекбокс")
-        }
+    passwordConfirmationValid = function (formElement) {
+        /*if (this.patternValid(valueElement, arValidEl)) {
+            /!** Если паттерн пройден *!/
 
-        if (valueElement) {
-            if (!this.patternArr[arValidEl].test(valueElement)) {
-                this.generateError(`this.errorText[valuePatternError]`, oneElement)
+            let pass = this.form.querySelector('[data-validation="password require"]');
+            if (valueElement && pass.value) {                          //если значение пароля и значение подтвержденного не null
+                if (valueElement !== pass.value) {                     //если значения паролей не равны
+                    this.generateError(this.errorText['passwordConfirm'], formElement);   //вызов функции с текстом
+                }
             }
         } else {
-            console.log(this.patternArr[arValidEl]);
-            this.generateError(`this.errorText[valueNone]`, oneElement)
+            this.generateError(this.errorText['valuePatternError'], formElement)
+        }*/
+
+    };
+
+    numberValid = function (formElement) {
+
+    };
+
+    requireValid = function (formElement) {
+        if (!formElement.value) {
+            this.generateError(this.errorText['valueNone'], formElement);
+            return false
+        }
+
+        return true
+    };
+
+    patternValid = function (valueElement, arValidEl) {
+        let pattern = this.patternArr[arValidEl];     /** передается дата первый дата атрибут */
+        return pattern.test(valueElement);      /** Возвращает фолс если значение не прошло валидацию паттерном */
+    };
+
+    emailValid = function (formElement) {
+        if (!this.patternValid(formElement.value, "email")) {
+            this.generateError(this.errorText['email'], formElement)
+            return false
+        }
+
+        return true
+    };
+
+    searchMethodValid = function (formElement) {
+        let validationRules = formElement.getAttribute('data-validation').split(" ");
+        for (let rule of validationRules) {               //Массив из дата атрибутов элемента
+            if (rule.indexOf("compare") !== -1) {
+                let compareWith = rule.split("=")[1];
+                this.compareValid(formElement, compareWith);
+                continue
+            }
+
+            let functionName = rule + 'Valid';
+
+            if (typeof this[functionName] == 'function') {
+                let result = this[functionName](formElement) //выполняются функции с названиями атрибута
+               /* if (!result) {
+                    break
+                }*/
+            } else {
+                console.log("function is not detected");
+            }
+
         }
 
 
@@ -67,44 +131,40 @@ class ValidationModule {
 
              /!** Если значение пустое, выводит error , если заполнено, вызывает функцию паттерна и принимает тру или фолс *!/
              case("emailValid") :
-                 let email = inputValue ? this.generateError('Поле не заполнено', oneElement) : this.patternValid(oneElement, arValidEl);
-                 !email ? this.generateError('Неверный Email', oneElement) : console.log();
+                 let email = inputValue ? this.generateError('Поле не заполнено', formElement) : this.patternValid(formElement, arValidEl);
+                 !email ? this.generateError('Неверный Email', formElement) : console.log();
                  break;
 
-             /!** Проверка на пустую строку, пвроерка по паттерну, проверка на совпадние паролей *!/
+  /
              case("password") :
-                 let passwordValid = inputValue ? this.generateError('Поле не заполнено', oneElement) : this.patternValid(oneElement, arValidEl);
-                 !passwordValid ? this.generateError('Не соответствует форматированию', oneElement) : this.comparePassword(oneElement);
+                 let passwordValid = inputValue ? this.generateError('Поле не заполнено', formElement) : this.patternValid(formElement, arValidEl);
+                 !passwordValid ? this.generateError('Не соответствует форматированию', formElement) : this.comparePassword(formElement);
                  break;
 
              case("passwordConfirmation") :
-                 inputValue ? this.generateError('Поле не заполнено', oneElement) : console.log();
+                 inputValue ? this.generateError('Поле не заполнено', formElement) : console.log();
                  break;
 
              case("country") :
-                 this.selectVal(oneElement);
+                 this.selectVal(formElement);
                  break;
 
-             /!**  Проверка номера, в плане выбор стандарта по региону this.number = паттерн   *!/
              case("number") :
-                 let number = inputValue ? this.generateError('Поле не заполнено', oneElement) : this.patternValid(oneElement, arValidEl);
-                 !number ? this.generateError('Номер введен неверно', oneElement) : console.log();
+                 let number = inputValue ? this.generateError('Поле не заполнено', formElement) : this.patternValid(formElement, arValidEl);
+                 !number ? this.generateError('Номер введен неверно', formElement) : console.log();
                  break;
 
              case("agreement") :
-                 this.agreement(oneElement);
+                 this.agreement(formElement);
                  break;
          }*/
     };
 
-    /**генерирует блок с ошибкой*/
-    generateError = function (text, oneElement) {                 //принимает текст и элемент перед которым нужно вставить блок
-        let error = document.createElement('div');       //создает элемент див
-        error.className = 'error';                                //добавляет диву класс
-        error.style.color = 'red';                                //устанавливает цвет текста
-        error.innerHTML = text;                                   //передает текст в иннерHtml
-        oneElement.parentElement.insertBefore(error, oneElement); //принимает значения перед родителем определенного элемента
+    /** проверка статуса чекбокса */
+    agreementValid = function (formElement) {
+        !formElement.checked ? this.generateError(this.errorText['agreement'], formElement) : console.log();
     };
+
 
     /**удаляет ошибки перед выполнением следующих проверок*/
     removeValidation = function (form) {
@@ -114,33 +174,23 @@ class ValidationModule {
         }
     };
 
-    patternValid = function (oneElement, dataA) {
-        let pattern = this.patternArr.get(`${dataA}`);     /** передается дата первый дата атрибут */
-        return pattern.test(oneElement.value);      /** Возвращает фолс если значение не прошло валидацию паттерном */
+
+    /**генерирует блок с ошибкой*/
+    generateError = function (text, formElement) {          //принимает текст и элемент перед которым нужно вставить блок
+
+
+        /*if(formElement.parentElement.insertBefore) {
+            formElement.parentElement.remove();
+
+        }*/
+        let error = document.createElement('div');       //создает элемент див
+        error.className = 'error';                                //добавляет диву класс
+        error.style.color = 'red';                                //устанавливает цвет текста
+        error.innerHTML = text;                                   //передает текст в иннерHtml
+        formElement.parentElement.insertBefore(error, formElement); //принимает значения перед родителем определенного элемента
     };
 
-    /**Сравнение паролей */
-    comparePassword = function (oneElement) {
-        let confirmPass = this.form.querySelector('[data-validation="passwordConfirmation require"]');
-        if (oneElement.value && confirmPass.value) {                          //если значение пароля и значение подтвержденного не null
-            if (oneElement.value !== confirmPass.value) {                     //если значения паролей не равны
-                this.generateError('Пароли не совпадают', oneElement);   //вызов функции с текстом
-            }
-        }
-    };
 
-    /** проверка выбора селекта */
-    selectVal = function (oneElement) {
-        let selectedValue = oneElement.options[oneElement.selectedIndex].value;       //селект.опции.[селект.айдиОпции].значение
-        if (!selectedValue) {                                               //если выбранное значение селекта не тру, т.е. не имеет значения и возвращает фолс
-            this.generateError('Вы ничего не выбрали', oneElement);         //выполняем функцию генерации ошибки с текстом,
-        }
-    };
-
-    /** проверка статуса чекбокса */
-    agreement = function (oneElement) {
-        !oneElement.checked ? this.generateError('Вы не приняли пользовательское соглашение', oneElement) : console.log();
-    };
 }
 
 let validator = new ValidationModule();

@@ -32,17 +32,19 @@
 </style>
 <form data-validation="formValidation" style="display: flex; flex-direction: column;" action="">
     <label>Email <br>
-        <input data-validation="emailValid require" name="emailValid" type="text"
+        <input data-validation="require email" name="emailValid" type="text"
                placeholder="Email">
     </label>
     <label>Password<br>
-        <input data-validation="password require" name="password" type="password" placeholder="password">
+        <input data-validation="password require compare=passwordConfirmation" name="password" type="password"
+               placeholder="password">
     </label>
     <label>Repeat password<br>
-        <input data-validation="passwordConfirmation require" name="passwordConfirmation" type="password" placeholder="repeat password">
+        <input id="passwordConfirmation" data-validation="password require" name="passwordConfirmation" type="password"
+               placeholder="repeat password">
     </label>
     <label>Choose country<br>
-        <select name="Country" data-validation="country ">
+        <select name="Country" data-validation="country require">
             <option value="">Не выбрано</option>
             <option value="Ukraine">Ukraine</option>
             <option value="Russia">Russia</option>
@@ -50,13 +52,13 @@
         </select>
     </label>
     <label>You number<br>
-        <input data-validation="number" name="number" type="text" placeholder="+11(222)333-44-55">
+        <input data-validation="number require" name="number" type="text" placeholder="+11(222)333-44-55">
     </label>
 
-    <label> I agree <br>
-        <!--<input data-validation="agreement require" name="agreement" type="checkbox">-->
+    <!--<label> I agree <br>
+        <input data-validation="agreement require" name="agreement" type="checkbox">
         <a href="">Пользовательское соглашение</a>
-    </label>
+    </label>-->
     <button data-validationz="btnSubmit" type="submit">Отправить</button>
 </form>
 <script src="js/validationModule.js"></script>
