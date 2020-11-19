@@ -36,15 +36,15 @@
                placeholder="Email">
     </label>
     <label>Password<br>
-        <input data-validation="password require compare=passwordConfirmation" name="password" type="password"
+        <input data-validation="require password compare=passwordConfirmation" name="password" type="password" value="Umic1Lbvf99"
                placeholder="password">
     </label>
     <label>Repeat password<br>
-        <input id="passwordConfirmation" data-validation="password require" name="passwordConfirmation" type="password"
+        <input id="passwordConfirmation" data-validation="require password" name="passwordConfirmation" value="Umic1Lbvf99" type="password"
                placeholder="repeat password">
     </label>
     <label>Choose country<br>
-        <select name="Country" data-validation="country require">
+        <select name="Country" data-validation="select">
             <option value="">Не выбрано</option>
             <option value="Ukraine">Ukraine</option>
             <option value="Russia">Russia</option>
@@ -52,13 +52,13 @@
         </select>
     </label>
     <label>You number<br>
-        <input data-validation="number require" name="number" type="text" placeholder="+11(222)333-44-55">
+        <input data-validation="require number" name="number" type="text" placeholder="+11(222)333-44-55">
     </label>
 
-    <!--<label> I agree <br>
-        <input data-validation="agreement require" name="agreement" type="checkbox">
+    <label> I agree <br>
+        <input data-validation="agreement" name="agreement" type="checkbox">
         <a href="">Пользовательское соглашение</a>
-    </label>-->
+    </label>
     <button data-validationz="btnSubmit" type="submit">Отправить</button>
 </form>
 <script src="js/validationModule.js"></script>

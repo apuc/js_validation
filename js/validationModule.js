@@ -34,7 +34,7 @@ class ValidationModule {
     };
 
     /** проверка выбора селекта */
-    countryValid = function (formElement) {
+    selectValid = function (formElement) {
         let selectedValue = formElement.options[formElement.selectedIndex].value;       //селект.опции.[селект.айдиОпции].значение
         if (!selectedValue) {                                               //если выбранное значение селекта не тру, т.е. не имеет значения и возвращает фолс
             this.generateError(this.errorText['selectValid'], formElement);         //выполняем функцию генерации ошибки с текстом,
@@ -43,50 +43,37 @@ class ValidationModule {
 
     compareValid = function (formElement, compareWith) {
         let compareTarget = document.getElementById(compareWith);
-        console.log(formElement.value);
-        console.log(compareTarget.value);
         if (compareTarget.value != formElement.value) {
-            console.log('asdasd');
             this.generateError(this.errorText['passwordConfirm'], formElement);
         }
     };
 
     passwordValid = function (formElement) {
-        if (this.patternValid(formElement.value, "password")) {
-            let confirmPass = this.form.querySelector('[data-validation="passwordConfirmation require"]');
+        if (!this.patternValid(formElement.value, "password")) {
+            this.generateError(this.errorText['valuePatternError'], formElement);
 
+            return false
         } else {
-            this.generateError(this.errorText['valuePatternError'], formElement)
+            return true
         }
-
-    };
-
-    passwordConfirmationValid = function (formElement) {
-        /*if (this.patternValid(valueElement, arValidEl)) {
-            /!** Если паттерн пройден *!/
-
-            let pass = this.form.querySelector('[data-validation="password require"]');
-            if (valueElement && pass.value) {                          //если значение пароля и значение подтвержденного не null
-                if (valueElement !== pass.value) {                     //если значения паролей не равны
-                    this.generateError(this.errorText['passwordConfirm'], formElement);   //вызов функции с текстом
-                }
-            }
-        } else {
-            this.generateError(this.errorText['valuePatternError'], formElement)
-        }*/
-
     };
 
     numberValid = function (formElement) {
+        if (!this.patternValid(formElement.value, "number")) {
+            this.generateError(this.errorText['valuePatternError'], formElement);
 
+            return false
+        } else {
+            return true
+        }
     };
 
     requireValid = function (formElement) {
         if (!formElement.value) {
             this.generateError(this.errorText['valueNone'], formElement);
+
             return false
         }
-
         return true
     };
 
@@ -97,74 +84,36 @@ class ValidationModule {
 
     emailValid = function (formElement) {
         if (!this.patternValid(formElement.value, "email")) {
-            this.generateError(this.errorText['email'], formElement)
+            this.generateError(this.errorText['email'], formElement);
+
             return false
         }
-
         return true
     };
 
     searchMethodValid = function (formElement) {
         let validationRules = formElement.getAttribute('data-validation').split(" ");
-        for (let rule of validationRules) {               //Массив из дата атрибутов элемента
-            if (rule.indexOf("compare") !== -1) {
+
+        for (let rule of validationRules) {//Массив из дата атрибутов элемента
+            if (rule.split("=")[1]) {
                 let compareWith = rule.split("=")[1];
                 this.compareValid(formElement, compareWith);
-                continue
             }
 
             let functionName = rule + 'Valid';
-
             if (typeof this[functionName] == 'function') {
-                let result = this[functionName](formElement) //выполняются функции с названиями атрибута
-               /* if (!result) {
+                let result = this[functionName](formElement);//выполняются функции с названиями атрибута
+                if (!result) {
                     break
-                }*/
-            } else {
-                console.log("function is not detected");
+                }
             }
-
         }
-
-
-        /* switch (arValidEl) {
-
-             /!** Если значение пустое, выводит error , если заполнено, вызывает функцию паттерна и принимает тру или фолс *!/
-             case("emailValid") :
-                 let email = inputValue ? this.generateError('Поле не заполнено', formElement) : this.patternValid(formElement, arValidEl);
-                 !email ? this.generateError('Неверный Email', formElement) : console.log();
-                 break;
-
-  /
-             case("password") :
-                 let passwordValid = inputValue ? this.generateError('Поле не заполнено', formElement) : this.patternValid(formElement, arValidEl);
-                 !passwordValid ? this.generateError('Не соответствует форматированию', formElement) : this.comparePassword(formElement);
-                 break;
-
-             case("passwordConfirmation") :
-                 inputValue ? this.generateError('Поле не заполнено', formElement) : console.log();
-                 break;
-
-             case("country") :
-                 this.selectVal(formElement);
-                 break;
-
-             case("number") :
-                 let number = inputValue ? this.generateError('Поле не заполнено', formElement) : this.patternValid(formElement, arValidEl);
-                 !number ? this.generateError('Номер введен неверно', formElement) : console.log();
-                 break;
-
-             case("agreement") :
-                 this.agreement(formElement);
-                 break;
-         }*/
     };
 
     /** проверка статуса чекбокса */
     agreementValid = function (formElement) {
-        !formElement.checked ? this.generateError(this.errorText['agreement'], formElement) : console.log();
+        !formElement.checked ? this.generateError(this.errorText['agreement'], formElement) : false;
     };
-
 
     /**удаляет ошибки перед выполнением следующих проверок*/
     removeValidation = function (form) {
@@ -174,23 +123,14 @@ class ValidationModule {
         }
     };
 
-
     /**генерирует блок с ошибкой*/
     generateError = function (text, formElement) {          //принимает текст и элемент перед которым нужно вставить блок
-
-
-        /*if(formElement.parentElement.insertBefore) {
-            formElement.parentElement.remove();
-
-        }*/
         let error = document.createElement('div');       //создает элемент див
         error.className = 'error';                                //добавляет диву класс
         error.style.color = 'red';                                //устанавливает цвет текста
         error.innerHTML = text;                                   //передает текст в иннерHtml
         formElement.parentElement.insertBefore(error, formElement); //принимает значения перед родителем определенного элемента
     };
-
-
 }
 
 let validator = new ValidationModule();
@@ -199,7 +139,4 @@ validator.form.addEventListener('submit', function (event) {
     event.preventDefault();
     validator.validation();
 });
-
 /**--------------------------------------------------------------------------*/
-
-
