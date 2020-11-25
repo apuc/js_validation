@@ -3,17 +3,19 @@ class ValidationModule {
     fields;
     patternArr;
     errorText;
+    btnSubmit;
 
     constructor() {
         this.form = document.querySelector('form[data-validation="formValidation"]');
         this.fields = this.form.querySelectorAll(`[data-validation]`);
+        this.btnSubmit = this.form.querySelector('[data-validation="btnSubmit"]');
         this.patternArr = {
             'number': /^\+\d{2}\(\d{3}\)\d{3}-\d{2}-\d{2}$/,
             'email': /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/,
             /**(?=.*[ -/:-@\[-`{-~]) паттерн для знаков */
             'password': /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{6,64}$/,
-
         };
+
         this.errorText = {
             'valueNone': "Поле не заполнено",
             'valuePatternError': "Поле заполнено неверно",
@@ -22,7 +24,6 @@ class ValidationModule {
             'passwordConfirm': "Пароли не совпадают",
             'agreement': "Вы не приняли пользовательсоке соглашение",
             'email': "Не корректный Email адрес",
-
         }
     }
 
@@ -30,6 +31,18 @@ class ValidationModule {
         this.removeValidation();
         for (let i = 0; i < this.fields.length; i++) {
             this.searchMethodValid(this.fields[i]);
+
+        }
+    };
+
+    btnSubmitActive = function () {
+        let error = this.form.querySelector('[data-valid="errorValid"]');
+        (error === null) ?this.btnSubmit.disabled = false : this.btnSubmit.disabled = true
+    };
+
+    validationRun = function () {
+        for (let i = 0; i < this.fields.length; i++) {
+            this.fields[i].addEventListener("change", this.validation.bind(this));
         }
     };
 
@@ -93,7 +106,6 @@ class ValidationModule {
 
     searchMethodValid = function (formElement) {
         let validationRules = formElement.getAttribute('data-validation').split(" ");
-
         for (let rule of validationRules) {//Массив из дата атрибутов элемента
             if (rule.split("=")[1]) {
                 let compareWith = rule.split("=")[1];
@@ -108,6 +120,7 @@ class ValidationModule {
                 }
             }
         }
+        this.btnSubmitActive();
     };
 
     /** проверка статуса чекбокса */
@@ -124,9 +137,10 @@ class ValidationModule {
     };
 
     /**генерирует блок с ошибкой*/
-    generateError = function (text, formElement) {          //принимает текст и элемент перед которым нужно вставить блок
+    generateError = function (text, formElement) {                //принимает текст и элемент перед которым нужно вставить блок
         let error = document.createElement('div');       //создает элемент див
         error.className = 'error';                                //добавляет диву класс
+        error.setAttribute("data-valid", "errorValid");
         error.style.color = 'red';                                //устанавливает цвет текста
         error.innerHTML = text;                                   //передает текст в иннерHtml
         formElement.parentElement.insertBefore(error, formElement); //принимает значения перед родителем определенного элемента
@@ -134,9 +148,10 @@ class ValidationModule {
 }
 
 let validator = new ValidationModule();
+validator.validationRun();
+
 /**Слушатель на кнопку сабмит, для вызова функций проверки*/
-validator.form.addEventListener('submit', function (event) {
-    event.preventDefault();
-    validator.validation();
+validator.form.addEventListener('submit', function () {
+    validator.validationRun();
 });
 /**--------------------------------------------------------------------------*/
