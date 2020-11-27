@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="#" />    <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -30,38 +30,37 @@
     }
 
 </style>
-<form data-validation="formValidation" style="display: flex; flex-direction: column;" action="">
+<form data-validation="formValidation" method="POST" style="display: flex; flex-direction: column;" action="">
     <label>Email <br>
         <input data-validation="require email" name="emailValid" type="text"
-               placeholder="Email">
+               placeholder="Email" value="dasds@asd.ru">
     </label>
     <label>Password<br>
         <input data-validation="require password compare=passwordConfirmation" name="password" type="password" value="QWERTy1"
                placeholder="password">
     </label>
     <label>Repeat password<br>
-        <input id="passwordConfirmation" data-validation="require password" name="passwordConfirmation" value="QWERTy12" type="password"
+        <input id="passwordConfirmation" data-validation="require password" name="passwordConfirmation" value="QWERTy1" type="password"
                placeholder="repeat password">
     </label>
     <label>Choose country<br>
         <select name="Country" data-validation="select">
-            <option value="">Не выбрано</option>
+           <!-- <option value="">Не выбрано</option>-->
             <option value="Ukraine">Ukraine</option>
             <option value="Russia">Russia</option>
             <option value="Belarus">Belarus</option>
-        </select>
+        </select>-0
     </label>
     <label>You number<br>
-        <input data-validation="require number" name="number" type="text" placeholder="+11(222)333-44-55">
+        <input data-validation="require number" name="number" type="text" placeholder="+11(222)333-44-55" value="+11(222)333-44-55">
     </label>
-
     <label> I agree <br>
-        <input data-validation="agreement" name="agreement" type="checkbox">
+        <input data-validation="agreement" name="agreement" type="checkbox" value="agree" checked>
         <a href="">Пользовательское соглашение</a>
     </label>
-    <button data-validation="btnSubmit" type="submit">Отправить</button>
+    <button data-validation="btnSubmit" type="submit" disabled >Отправить</button>
 </form>
-
 <script src="js/validationModule.js"></script>
+<script src="js/main.js"></script>
 </body>
 </html>

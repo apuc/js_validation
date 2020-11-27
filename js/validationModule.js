@@ -27,23 +27,62 @@ class ValidationModule {
         }
     }
 
+    validationRun = function () {
+        for (let i = 0; i < this.fields.length; i++) {                  //перебор элементов формы
+            this.fields[i].addEventListener("change", this.validation.bind(this));      //добавляет слушатель на изменение данных с функцией валидации
+        }
+    };
+
     validation = function () {
         this.removeValidation();
-        for (let i = 0; i < this.fields.length; i++) {
-            this.searchMethodValid(this.fields[i]);
-
+        for (let i = 0; i < this.fields.length; i++) { //перебирает элементы формы
+            this.searchMethodValid(this.fields[i]);         //вызывает для каждого функцию поиска соответственной валидации
         }
     };
 
-    btnSubmitActive = function () {
-        let error = this.form.querySelector('[data-valid="errorValid"]');
-        (error === null) ?this.btnSubmit.disabled = false : this.btnSubmit.disabled = true
+    searchMethodValid = function (formElement) {
+        let validationRules = formElement.getAttribute('data-validation').split(" ");
+        for (let rule of validationRules) {//Массив из дата атрибутов элемента
+            if (rule.split("=")[1]) {           //поиск элементов которые нужно сравнивать
+                let compareWith = rule.split("=")[1];   //разделить атрибут по равно и взять второй элемент массива
+                this.compareValid(formElement, compareWith);        //вызывает функцию сравнения передавая текущий элемент и второй элемент из дата атриюута
+            }
+
+            let functionName = rule + 'Valid';
+            if (typeof this[functionName] == 'function') {
+                let result = this[functionName](formElement);//выполняются функции с названиями атрибута
+                if (!result) {
+                    break
+                }
+            }
+        }
+        this.btnSubmitActive();
     };
 
-    validationRun = function () {
-        for (let i = 0; i < this.fields.length; i++) {
-            this.fields[i].addEventListener("change", this.validation.bind(this));
+    compareValid = function (formElement, compareWith) { //принимает элемент и строку с айди второго элемента
+        let compareTarget = document.getElementById(compareWith);
+        if (compareTarget.value != formElement.value) {
+            this.generateError(this.errorText['passwordConfirm'], formElement);
         }
+    };
+
+    /**удаляет ошибки перед выполнением следующих проверок*/
+    removeValidation = function (form) {
+        let errors = this.form.querySelectorAll('.error');
+        for (let i = 0; i < errors.length; i++) {
+            errors[i].remove();
+        }
+    };
+
+    /**генерирует блок с ошибкой*/
+    generateError = function (text, formElement) {                //принимает текст и элемент перед которым нужно вставить блок
+        let error = document.createElement('div');       //создает элемент див
+        error.className = 'error';                                //добавляет диву класс
+        this.form.setAttribute("data-validation-error", "errorValid");
+        error.setAttribute("data-valid", "errorValid");
+        error.style.color = 'red';                                //устанавливает цвет текста
+        error.innerHTML = text;                                   //передает текст в иннерHtml
+        formElement.parentElement.insertBefore(error, formElement); //принимает значения перед родителем определенного элемента
     };
 
     /** проверка выбора селекта */
@@ -51,13 +90,6 @@ class ValidationModule {
         let selectedValue = formElement.options[formElement.selectedIndex].value;       //селект.опции.[селект.айдиОпции].значение
         if (!selectedValue) {                                               //если выбранное значение селекта не тру, т.е. не имеет значения и возвращает фолс
             this.generateError(this.errorText['selectValid'], formElement);         //выполняем функцию генерации ошибки с текстом,
-        }
-    };
-
-    compareValid = function (formElement, compareWith) {
-        let compareTarget = document.getElementById(compareWith);
-        if (compareTarget.value != formElement.value) {
-            this.generateError(this.errorText['passwordConfirm'], formElement);
         }
     };
 
@@ -104,54 +136,94 @@ class ValidationModule {
         return true
     };
 
-    searchMethodValid = function (formElement) {
-        let validationRules = formElement.getAttribute('data-validation').split(" ");
-        for (let rule of validationRules) {//Массив из дата атрибутов элемента
-            if (rule.split("=")[1]) {
-                let compareWith = rule.split("=")[1];
-                this.compareValid(formElement, compareWith);
-            }
-
-            let functionName = rule + 'Valid';
-            if (typeof this[functionName] == 'function') {
-                let result = this[functionName](formElement);//выполняются функции с названиями атрибута
-                if (!result) {
-                    break
-                }
-            }
-        }
-        this.btnSubmitActive();
-    };
-
     /** проверка статуса чекбокса */
     agreementValid = function (formElement) {
         !formElement.checked ? this.generateError(this.errorText['agreement'], formElement) : false;
     };
 
-    /**удаляет ошибки перед выполнением следующих проверок*/
-    removeValidation = function (form) {
-        let errors = this.form.querySelectorAll('.error');
-        for (let i = 0; i < errors.length; i++) {
-            errors[i].remove();
+    btnSubmitActive = function () {
+        let error = this.form.querySelector('[data-valid="errorValid"]');
+        if (error === null) {
+            this.btnSubmit.disabled = false;
+            this.form.removeAttribute("data-validation-error");
+            //console.log("Можно отправлять");
+        } else {
+            this.btnSubmit.disabled = true;
         }
     };
 
-    /**генерирует блок с ошибкой*/
-    generateError = function (text, formElement) {                //принимает текст и элемент перед которым нужно вставить блок
-        let error = document.createElement('div');       //создает элемент див
-        error.className = 'error';                                //добавляет диву класс
-        error.setAttribute("data-valid", "errorValid");
-        error.style.color = 'red';                                //устанавливает цвет текста
-        error.innerHTML = text;                                   //передает текст в иннерHtml
-        formElement.parentElement.insertBefore(error, formElement); //принимает значения перед родителем определенного элемента
+    sendFormToServer = function () {
+        // if (!this.form.hasAttribute("data-validation-error")) {
+        const url = 'https://jsonplaceholder.typicode.com/todos/7';
+        return fetch(url).then(response => {
+            return response.text()
+        })
+
+
+        /*     let hxr = new XMLHttpRequest();
+             hxr.open('POST', 'ip.php', true);
+             hxr.onreadystatechange = function () {
+                 if (hxr.readyState === 4) {  //либо 2 равно??
+                     console.log("Принял ответ от сервера");
+                     console.log(hxr.responseText)
+                 }
+             };
+             hxr.send(params);
+             console.log(params);*/
+        // }
     };
 }
 
 let validator = new ValidationModule();
-validator.validationRun();
+const requestURL = 'ip.php';
 
-/**Слушатель на кнопку сабмит, для вызова функций проверки*/
-validator.form.addEventListener('submit', function () {
-    validator.validationRun();
+let object = {};
+let formData = new FormData(validator.form);
+formData.forEach(function (value, key) {
+    object[key] = value;
 });
-/**--------------------------------------------------------------------------*/
+
+let json = JSON.stringify(object);
+
+
+function kek(method, url, body = null) {
+    const headers = {
+        'Content-Type': 'application/json'
+    };
+
+    return fetch(url, {
+        method: method,
+        body: JSON.stringify(body),
+        headers: headers
+    }).then((response) => {
+        return response.json();
+    })
+        .then((data) => {
+            console.log(data);
+        });
+}
+
+kek('POST', requestURL, json)
+    .then()
+    .catch(err => console.log(err));
+
+function vRun() {
+    let validator = new ValidationModule();
+    validator.validationRun();
+    validator.form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        validator.sendFormToServer();
+        /*    let object = {};
+            let formData = new FormData(validator.form);
+            formData.forEach(function(value, key){
+                object[key] = value;
+            });
+            let json = JSON.stringify(object);
+            console.log(json);*/
+        //console.log(validator.validationRun());
+        //validator.sendFormToServer();
+        /* if (!validator.form.hasAttribute("data-validation-error")) {
+
+         }*/
+    });
+}
