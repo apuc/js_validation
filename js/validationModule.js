@@ -1,30 +1,13 @@
 class ValidationModule {
     form;
     fields;
-    patternArr;
-    errorText;
     btnSubmit;
 
     constructor() {
         this.form = document.querySelector('form[data-validation="formValidation"]');
         this.fields = this.form.querySelectorAll(`[data-validation]`);
         this.btnSubmit = this.form.querySelector('[data-validation="btnSubmit"]');
-        this.patternArr = {
-            'number': /^\+\d{2}\(\d{3}\)\d{3}-\d{2}-\d{2}$/,
-            'email': /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/,
-            /**(?=.*[ -/:-@\[-`{-~]) паттерн для знаков */
-            'password': /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{6,64}$/,
-        };
 
-        this.errorText = {
-            'valueNone': "Поле не заполнено",
-            'valuePatternError': "Поле заполнено неверно",
-            'selectValid': "Вы ничего не выбрали",
-            'checkboxConfirm': "Вы не приняли лицензионное соглашение",
-            'passwordConfirm': "Пароли не совпадают",
-            'agreement': "Вы не приняли пользовательсоке соглашение",
-            'email': "Не корректный Email адрес",
-        }
     }
 
     validationRun = function () {
@@ -62,7 +45,7 @@ class ValidationModule {
     compareValid = function (formElement, compareWith) { //принимает элемент и строку с айди второго элемента
         let compareTarget = document.getElementById(compareWith);
         if (compareTarget.value != formElement.value) {
-            this.generateError(this.errorText['passwordConfirm'], formElement);
+            this.generateError(errorText['passwordConfirm'], formElement);
         }
     };
 
@@ -89,13 +72,13 @@ class ValidationModule {
     selectValid = function (formElement) {
         let selectedValue = formElement.options[formElement.selectedIndex].value;       //селект.опции.[селект.айдиОпции].значение
         if (!selectedValue) {                                               //если выбранное значение селекта не тру, т.е. не имеет значения и возвращает фолс
-            this.generateError(this.errorText['selectValid'], formElement);         //выполняем функцию генерации ошибки с текстом,
+            this.generateError(errorText['selectValid'], formElement);         //выполняем функцию генерации ошибки с текстом,
         }
     };
 
     passwordValid = function (formElement) {
         if (!this.patternValid(formElement.value, "password")) {
-            this.generateError(this.errorText['valuePatternError'], formElement);
+            this.generateError(errorText['valuePatternError'], formElement);
 
             return false
         } else {
@@ -105,7 +88,7 @@ class ValidationModule {
 
     numberValid = function (formElement) {
         if (!this.patternValid(formElement.value, "number")) {
-            this.generateError(this.errorText['valuePatternError'], formElement);
+            this.generateError(errorText['valuePatternError'], formElement);
 
             return false
         } else {
@@ -115,7 +98,7 @@ class ValidationModule {
 
     requireValid = function (formElement) {
         if (!formElement.value) {
-            this.generateError(this.errorText['valueNone'], formElement);
+            this.generateError(errorText['valueNone'], formElement);
 
             return false
         }
@@ -123,13 +106,13 @@ class ValidationModule {
     };
 
     patternValid = function (valueElement, arValidEl) {
-        let pattern = this.patternArr[arValidEl];     /** передается дата первый дата атрибут */
+        let pattern = patternArr[arValidEl];     /** передается дата первый дата атрибут */
         return pattern.test(valueElement);      /** Возвращает фолс если значение не прошло валидацию паттерном */
     };
 
     emailValid = function (formElement) {
         if (!this.patternValid(formElement.value, "email")) {
-            this.generateError(this.errorText['email'], formElement);
+            this.generateError(errorText['email'], formElement);
 
             return false
         }
@@ -138,7 +121,7 @@ class ValidationModule {
 
     /** проверка статуса чекбокса */
     agreementValid = function (formElement) {
-        !formElement.checked ? this.generateError(this.errorText['agreement'], formElement) : false;
+        !formElement.checked ? this.generateError(errorText['agreement'], formElement) : false;
     };
 
     btnSubmitActive = function () {
@@ -159,7 +142,7 @@ class ValidationModule {
             object[key] = value;
         });
         let json = JSON.stringify(object);
-        await console.log("Создание Json");
+        await console.log("Создание Json" + json);
         await this.sendFormToServer(method, url, json);
     };
 
@@ -180,9 +163,10 @@ class ValidationModule {
     };
 }
 
-function vRun(method, url) {
+async function vRun(method, url) {
     let validator = new ValidationModule();
-    validator.validationRun();
+    await validator.validationRun();
+    await validator.validation();
     validator.form.addEventListener('submit', function (e) {
         e.preventDefault();
         validator.createJsonForm(method, url).then(r => console.log("Создало форму"));
