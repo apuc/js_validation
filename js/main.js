@@ -1,3 +1,3 @@
 window.onload = function () {
-  //  vRun()
+    vRun('Post','ip.php')
 };

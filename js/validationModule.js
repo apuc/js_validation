@@ -152,78 +152,44 @@ class ValidationModule {
         }
     };
 
-    sendFormToServer = function () {
-        // if (!this.form.hasAttribute("data-validation-error")) {
-        const url = 'https://jsonplaceholder.typicode.com/todos/7';
-        return fetch(url).then(response => {
-            return response.text()
-        })
+    createJsonForm = async function (method, url) {
+        let object = {};
+        let formData = new FormData(validator.form);
+        await formData.forEach(function (value, key) {
+            object[key] = value;
+        });
+        let json = JSON.stringify(object);
+        await console.log("Создание Json");
+        await this.sendFormToServer(method, url, json);
+    };
 
+    sendFormToServer = function (method, url, body = null) {
+        if (!this.form.hasAttribute("data-validation-error")) {
+            const headers = {
+                'Content-Type': 'application/json'
+            };
 
-        /*     let hxr = new XMLHttpRequest();
-             hxr.open('POST', 'ip.php', true);
-             hxr.onreadystatechange = function () {
-                 if (hxr.readyState === 4) {  //либо 2 равно??
-                     console.log("Принял ответ от сервера");
-                     console.log(hxr.responseText)
-                 }
-             };
-             hxr.send(params);
-             console.log(params);*/
-        // }
+            return fetch(url, {
+                method: method,
+                body: JSON.stringify(body),
+                headers: headers
+            }).then((response) => {
+                return response.json();
+            })
+                .then((body) => {
+                    console.log(body);
+                });
+        }
     };
 }
 
 let validator = new ValidationModule();
-const requestURL = 'ip.php';
 
-let object = {};
-let formData = new FormData(validator.form);
-formData.forEach(function (value, key) {
-    object[key] = value;
-});
-
-let json = JSON.stringify(object);
-
-
-function kek(method, url, body = null) {
-    const headers = {
-        'Content-Type': 'application/json'
-    };
-
-    return fetch(url, {
-        method: method,
-        body: JSON.stringify(body),
-        headers: headers
-    }).then((response) => {
-        return response.json();
-    })
-        .then((data) => {
-            console.log(data);
-        });
-}
-
-kek('POST', requestURL, json)
-    .then()
-    .catch(err => console.log(err));
-
-function vRun() {
+function vRun(method, url) {
     let validator = new ValidationModule();
     validator.validationRun();
     validator.form.addEventListener('submit', function (e) {
         e.preventDefault();
-        validator.sendFormToServer();
-        /*    let object = {};
-            let formData = new FormData(validator.form);
-            formData.forEach(function(value, key){
-                object[key] = value;
-            });
-            let json = JSON.stringify(object);
-            console.log(json);*/
-        //console.log(validator.validationRun());
-        //validator.sendFormToServer();
-        /* if (!validator.form.hasAttribute("data-validation-error")) {
-
-         }*/
+        validator.createJsonForm(method, url).then(r => console.log("Выполнило отправу формы?"));
     });
 }
