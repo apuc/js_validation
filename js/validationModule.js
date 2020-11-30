@@ -146,15 +146,15 @@ class ValidationModule {
         if (error === null) {
             this.btnSubmit.disabled = false;
             this.form.removeAttribute("data-validation-error");
-            //console.log("Можно отправлять");
         } else {
             this.btnSubmit.disabled = true;
         }
     };
 
     createJsonForm = async function (method, url) {
+        await this.validationRun();
         let object = {};
-        let formData = new FormData(validator.form);
+        let formData = new FormData(this.form);
         await formData.forEach(function (value, key) {
             object[key] = value;
         });
@@ -168,28 +168,23 @@ class ValidationModule {
             const headers = {
                 'Content-Type': 'application/json'
             };
-
             return fetch(url, {
                 method: method,
                 body: JSON.stringify(body),
                 headers: headers
-            }).then((response) => {
-                return response.json();
-            })
-                .then((body) => {
-                    console.log(body);
-                });
+            }).then((body) => {
+                console.log(body);
+                return body;
+            }).catch (err => console.log(err + " error"))
         }
     };
 }
-
-let validator = new ValidationModule();
 
 function vRun(method, url) {
     let validator = new ValidationModule();
     validator.validationRun();
     validator.form.addEventListener('submit', function (e) {
         e.preventDefault();
-        validator.createJsonForm(method, url).then(r => console.log("Выполнило отправу формы?"));
+        validator.createJsonForm(method, url).then(r => console.log("Создало форму"));
     });
 }
