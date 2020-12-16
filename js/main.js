@@ -1,3 +1,9 @@
+import {v$} from './validationModule.js';
+
 window.onload = function () {
-    vRun('Post', 'ip.php').then(r => console.log("Валидация при загрузке страницы "))
+	//v$.fillObjectData();
+	v$.vRun('Post', 'ip.php').then(r => console.log("Валидация при загрузке страницы"))
 };
+
+
+
